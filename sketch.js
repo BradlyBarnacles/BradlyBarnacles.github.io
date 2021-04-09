@@ -1,18 +1,21 @@
 class Node {
   constructor(x, y){
     this.position = createVector(x,y);
-    stroke(255);
+    fill(255);
+    noStroke();
     circle(this.position.x, this.position.y, 5);
   }
 
   OnHoverEnter(){
-    stroke(255, 204, 0);
-    console.log("highlight")
+    fill(255, 204, 0);
+    noStroke();
     circle(this.position.x, this.position.y, 5);
   }
 
   OnHoverExit(){
-    stroke(255);
+    fill(255);
+    noStroke();
+    console.log("hit");
     circle(this.position.x, this.position.y, 5);
   }
 }
@@ -24,25 +27,20 @@ class Knot {
   }
 
   CheckForHoverNode(mousePos){
-    if (this.hoveredNode != null) {
-      if (mousePos.dist(this.nodes[this.hoveredNode].position) >= 20){
-        this.nodes[this.hoveredNode].OnHoverExit;
+    var closest_dist = 20;
+    var closest_indx = null;
+    for (let i = 0; i< this.nodes.length; i++){
+      if (mousePos.dist(this.nodes[i].position) < closest_dist){
+        closest_dist = mousePos.dist(this.nodes[i].position);
+        closest_indx = i;
       }
     }
-  
-    for (let i = 0; i< this.nodes.length; i++){
-      if (mousePos.dist(this.nodes[i].position) < 20){
-        if (this.hoveredNode != i){
-          this.nodes[i].OnHoverEnter();
-          console.log(i);
-          this.hoveredNode = i;
-        }
-      }
-      else{
-        if (this.hoveredNode == i){
-          this.nodes[i].OnHoverExit();
-        }
-      }
+    if (closest_indx != this.hoveredNode){
+      if(closest_indx != null){this.nodes[closest_indx].OnHoverEnter();}
+
+      if(this.hoveredNode != null){this.nodes[this.hoveredNode].OnHoverExit();}
+
+      this.hoveredNode = closest_indx;
     }
 
   }
@@ -68,6 +66,7 @@ function draw() {
 }
 
 function mousePressed() {
+  console.log(knot.nodes);
   append(knot.nodes, new Node(mouseX, mouseY));
 }
 
